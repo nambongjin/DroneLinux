@@ -1,3 +1,7 @@
 
 network/echo_mpserv
 network/echo_client
+network/echo_selectserv
+network/select
+network/oob_send
+network/oob_recv
