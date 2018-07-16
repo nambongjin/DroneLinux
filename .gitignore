@@ -5,3 +5,5 @@ network/echo_selectserv
 network/select
 network/oob_send
 network/oob_recv
+network/news_receiver
+network/news_sender
