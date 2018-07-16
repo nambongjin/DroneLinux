@@ -5,8 +5,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-#define BUFSIZE 1024
-
+#define BUFSIZE	1024
 int main(int argc, char *argv[])
 {
 	int sock;
@@ -17,32 +16,31 @@ int main(int argc, char *argv[])
 	FILE *writefp;
 	int cpy_sock;
 
-	//1. socket
+	// 1. socket
 	sock = socket(PF_INET, SOCK_STREAM, 0);
-	
-	//2. ¼­¹ö ÁÖ¼Ò ¼³Á¤
+
+	// 2. ì„œë²„ ì£¼ì†Œ ì„¤ì •
 	memset(&serv_addr, 0, sizeof(serv_addr));
-	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
-	serv_addr.sin_port = htons(atoi(argv[2]));
+	serv_addr.sin_family=AF_INET;
+	serv_addr.sin_addr.s_addr=inet_addr(argv[1]);
+	serv_addr.sin_port=htons(atoi(argv[2]));
 
 	cpy_sock = dup(sock);
-	//3. connect
+	// 3. connect
 	connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 	readfp = fdopen(sock, "r");
-	writefp = fdopen(cpy_sock, "w");
+	writefp = fdopen(cpy_sock,"w");
 
-	while (1)
+	while(1)
 	{
-		if (fgets(buf, sizeof(buf), readfp) == NULL)
+		if(fgets(buf,sizeof(buf),readfp)==NULL)
 			break;
 		fputs(buf, stdout);
 		fflush(stdout);
 	}
-	fputs("From CLIENT : Thank you!\n", writefp);
+	fputs("From CLIENT: Thank you!\n", writefp);
 	fflush(writefp);
 	fclose(writefp);
 	fclose(readfp);
-
 	return 0;
 }
