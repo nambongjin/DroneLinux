@@ -7,3 +7,5 @@ network/oob_send
 network/oob_recv
 network/news_receiver
 network/news_sender
+network/news_sender_brd
+network/news_receiver_brd
