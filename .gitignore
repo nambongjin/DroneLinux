@@ -9,3 +9,6 @@ network/news_receiver
 network/news_sender
 network/news_sender_brd
 network/news_receiver_brd
+network/dup
+network/sep_clnt
+network/sep_serv
