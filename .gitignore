@@ -12,3 +12,4 @@ network/news_receiver_brd
 network/dup
 network/sep_clnt
 network/sep_serv
+network/echo_epollserv
