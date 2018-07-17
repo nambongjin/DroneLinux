@@ -13,3 +13,9 @@ network/dup
 network/sep_clnt
 network/sep_serv
 network/echo_epollserv
+network/thread/thread1
+network/thread/mutex
+network/thread/thread2
+network/thread/thread3
+network/thread/thread4
+network/thread/semaphore
