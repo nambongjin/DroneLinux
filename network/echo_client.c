@@ -36,31 +36,31 @@ int main(int argc, char *argv[])
 	serv_addr.sin_port=htons(atoi(argv[2]));
 
 	// 3. connect()
-	if (connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)
+	if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr))==-1)
 	{
 		error_handling("connect() error");
 	}
 	else
 		printf("Connected.....\n");
-	while (1)
+
+	while(1)
 	{
-		printf("Input message(Q to quit) : ");
+		printf("Input message(Q to quit):");
 		fgets(message, sizeof(message), stdin);
-
-		if (!strcmp(message, "q\n") || !strcmp(message, "Q\n"))
+	
+		if(!strcmp(message,"q\n") ||!strcmp(message,"Q\n"))
 			break;
-		
-		str_len = write(sock, message, strlen(message));
-		str_len = read(sock, message, sizeof(message)-1);
-		message[str_len] = 0;		//NULL문자 삽입
-		if (str_len == -1)
-			error_handling("read() error");
 
+	 	write(sock, message, strlen(message));
+		str_len = read(sock,message,sizeof(message)-1);
+		message[str_len]=0;	// NULL문자 삽입
+		if(str_len==-1)
+			error_handling("read() error");
+	
 		printf("Message from server: %s\n", message);
 	}
 	// 5. close()
 	close(sock);
-	
 	return 0;
 }
 
@@ -70,3 +70,6 @@ void error_handling(char *message)
         fputc('\n', stderr);
         exit(1);
 }
+
+
+

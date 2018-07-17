@@ -73,12 +73,13 @@ int main(int argc, char *argv[])
 		{
 			continue;
 		}	
-		
-		for(i=2;i<fd_max+1; i++)
+		// fd=3 ~ 
+		for(i=3;i<fd_max+1; i++)
 		{
 			// connection request
 			if(FD_ISSET(i, &cpy_reads))
 			{
+				// 서버로 접속 요청이 들어온 경우
 				if(i==serv_sock)
 				{
 					adr_sz = sizeof(clnt_addr);
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
 					printf("connected client:%d\n", clnt_sock);
 				}
 			
-				else	// read message!
+				else	// 클라이언트 소켓으로 데이터 전송 요청이 들어온 경우 (fd>3)
 				{
 					str_len = read(i, buf, BUFSIZE);
 					// 수신된 데이터가 0인 경우

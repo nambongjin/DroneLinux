@@ -6,15 +6,16 @@
 #include <sys/socket.h>
 #include <sys/epoll.h>
 
-#define BUFSIZE 100
+#define BUFSIZE	100
 #define EPOLL_SIZE 50
+
 #define DEBUG
 
 void error_handling(char *message)
 {
-	fputs(message, stderr);
-	fputc('\n', stderr);
-	exit(1);
+        fputs(message, stderr);
+        fputc('\n', stderr);
+        exit(1);
 }
 
 int main(int argc, char *argv[])
@@ -25,89 +26,90 @@ int main(int argc, char *argv[])
 	int str_len, i;
 	char buf[BUFSIZE];
 
-	// epoll°ü·Ã
+	// epollê´€ë ¨
 	struct epoll_event *ep_events;
 	struct epoll_event event;
 	int epfd, event_cnt;
 
-	if (argc != 2)
+	if(argc!=2)
 	{
-		printf("Usage : %s [PORT]\n", argv[0]);
+		printf("Usage : %s [port]\n", argv[0]);
 		exit(1);
 	}
 
-	//1.socket()
+	// 1.socket()
 	serv_sock = socket(PF_INET, SOCK_STREAM, 0);
-
-	//2.¼­¹ö ÁÖ¼Ò°ª ¼³Á¤
+	
+	// 2. ì„œë²„ ì£¼ì†Œê°’ ì„¤ì •
 	memset(&serv_addr, 0, sizeof(serv_addr));
-	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serv_addr.sin_port = htons(atoi(argv[1]));
+	serv_addr.sin_family=AF_INET;
+	serv_addr.sin_addr.s_addr=htonl(INADDR_ANY);
+	serv_addr.sin_port=htons(atoi(argv[1]));
 
-	//3. bind()
-	if (bind(serv_sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)
+	// 3. bind()
+	if(bind(serv_sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr))==-1)
 		error_handling("bind() error");
-
-	//4. listen()
-	if (listen(serv_sock, 5) == -1)
+	
+	// 4. listen()
+	if(listen(serv_sock, 5)==-1)
 		error_handling("listen() error");
 
-	//epoll : 1. epoll_create()
-	epfd = epoll_create(EPOLL_SIZE);		//epollÀÌº¥Æ® ±¸Á¶Ã¼¸¦ 50°³ »ı¼º
+	// epoll : 1. epoll_create()
+	epfd = epoll_create(EPOLL_SIZE);	// epollì´ë²¤íŠ¸ êµ¬ì¡°ì²´ë¥¼ 50ê°œ ìƒì„±
 	ep_events = malloc(sizeof(struct epoll_event)*EPOLL_SIZE);
-	if (ep_events == NULL)
+ 	if(ep_events==NULL)
 		error_handling("epoll event malloc error");
 
 #ifdef DEBUG
 	printf("epfd=%d\n", epfd);
 #endif
 
-	//epoll : 2. server_sock ÀÌº¥Æ® µî·Ï
-	//epoll_ctl() : EPOLL_CTL_ADD
-	event.events = EPOLLIN;
+	// epoll : 2. serv_sock ì´ë²¤íŠ¸ ë“±ë¡
+	// epoll_ctl() : EPOLL_CTL_ADD
+	event.events  = EPOLLIN;
 	event.data.fd = serv_sock;
 	epoll_ctl(epfd, EPOLL_CTL_ADD, serv_sock, &event);
-
-	while (1)
+	
+	while(1)
 	{
-		//epoll : 3. epoll_wait()
-		event_cnt = epoll_wait(epfd, ep_events, EPOLL_SIZE, -1);
-		// epoll_wait()ÇÔ¼ö È£Ãâ ¿¡·¯ ¹ß»ı½Ã
-		if (event_cnt == -1)
+		// epoll : 3. epoll_wait()
+		event_cnt = epoll_wait(epfd, ep_events, EPOLL_SIZE, -1); 
+		// epoll_wait()í•¨ìˆ˜ í˜¸ì¶œ ì—ëŸ¬ ë°œìƒì‹œ
+		if(event_cnt==-1)
 		{
 			puts("epoll_wait() error");
 			break;
 		}
-		for (int i = 0; i < event_cnt; i++)
+
+		for(i=0;i<event_cnt;i++)
 		{
-			// Å¬¶óÀÌ¾ğÆ®·ÎºÎÅÍ ¼­¹ö¿¡ ´ëÇÑ Á¢¼Ó ¿äÃ»ÀÌ ¹ß»ıÇÑ °æ¿ì
-			if (ep_events[i].data.fd == serv_sock)
+			// í´ë¼ì´ì–¸íŠ¸ë¡œë¶€í„° ì„œë²„ì—ëŒ€í•œ ì ‘ì† ìš”ì²­ì´ ë°œìƒí•œ ê²½ìš°
+			if(ep_events[i].data.fd==serv_sock)
 			{
 				adr_sz = sizeof(clnt_addr);
 				clnt_sock = accept(serv_sock, (struct sockaddr*)&clnt_addr, &adr_sz);
 
-#ifdef DEBUG
-				printf("clnt_sock=%d\n", clnt_sock);
+#ifdef DEBUG	
+				printf("clnt_sock=%d\n",clnt_sock);
 #endif
 
-				// Å¬¶óÀÌ¾ğÆ®°¡ Á¢¼ÓÇÒ¶§¸¶´Ù epollÀÌº¥Æ®¿¡ µî·Ï
-				event.events = EPOLLIN;
-				event.data.fd = clnt_sock;
-				epoll_ctl(epfd, EPOLL_CTL_ADD, clnt_sock, &event);
+				// í´ë¼ì´ì–¸íŠ¸ê°€ ì ‘ì†í• ë•Œë§ˆë‹¤ epollì´ë²¤íŠ¸ì— ë“±ë¡
+			    event.events  = EPOLLIN;
+    			event.data.fd = clnt_sock;
+    			epoll_ctl(epfd, EPOLL_CTL_ADD, clnt_sock, &event);
 			}
-			// Å¬¶óÀÌ¾ğÆ®·Î ºÎÅÍ µé¾î¿À´Â ÀÔ·Â µ¥ÀÌÅÍ Ã³¸®
+			// í´ë¼ì´ì–¸íŠ¸ë¡œ ë¶€í„° ë“¤ì–´ì˜¤ëŠ” ì…ë ¥ ë°ì´í„° ì²˜ë¦¬
 			else
 			{
-				str_len = read(ep_events[i].data.fd, buf, BUFSIZE);
-				if (str_len == 0)	//EOFÀÎ °æ¿ì : close, half_closeÀÎ °æ¿ì
+				str_len=read(ep_events[i].data.fd, buf, BUFSIZE);
+				if(str_len==0)	// EOFì¸ ê²½ìš° : close, half-closeì¸ ê²½ìš°
 				{
-					// Å¬¶óÀÌ¾ğÆ® Á¢¼ÓÀ» Á¾·áÇÏ±âÀü epoll_event¸¦ ÇØÁ¦
+					// í´ë¼ì´ì–¸íŠ¸ ì ‘ì†ì„ ì¢…ë£Œí•˜ê¸°ì „ epoll_eventë¥¼ í•´ì œ
 					epoll_ctl(epfd, EPOLL_CTL_DEL, ep_events[i].data.fd, NULL);
 					close(ep_events[i].data.fd);
-					printf("closed client : %d\n", ep_events[i].data.fd);
+					printf("closed client:%d\n",ep_events[i].data.fd);
 				}
-				// Å¬¶óÀÌ¾ğÆ®·ÎºÎÅÍ ÀÔ·ÂµÈ µ¥ÀÌÅÍ¸¦ echo·Î µÇµ¹¸²
+				// í´ë¼ì´ì–¸íŠ¸ë¡œë¶€í„° ì…ë ¥ëœ ë°ì´í„°ë¥¼ echoë¡œ ë˜ëŒë¦¼
 				else
 				{
 					write(ep_events[i].data.fd, buf, str_len);
@@ -117,6 +119,6 @@ int main(int argc, char *argv[])
 	}
 	close(serv_sock);
 	close(epfd);
-
+	
 	return 0;
 }

@@ -10,7 +10,7 @@
 int main(int argc, char *argv[])
 {
 	int serv_sock, clnt_sock;
-	char buf[BUFSIZE];
+	char buf[BUFSIZE]={0,};
 	struct sockaddr_in serv_addr, clnt_addr;
 	socklen_t clnt_adr_sz;
 	FILE *readfp;
@@ -45,6 +45,8 @@ int main(int argc, char *argv[])
 	fputs("You are awesome!\n",writefp);
 	fflush(writefp);
 	fclose(writefp);
+	shutdown(clnt_sock, SHUT_WR);
+	//fclose(writefp);
 
 	fgets(buf,sizeof(buf), readfp);
 	fputs(buf, stdout);

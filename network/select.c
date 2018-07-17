@@ -12,37 +12,35 @@ int main(int argc, char *argv[])
 	char buf[BUFSIZE];
 	struct timeval timeout;
 
-	// reads°ª ¼³Á¤
+	// readsê°’ ì„¤ì •
 	FD_ZERO(&reads);
-	FD_SET(0, &reads);		//stdin : monitoring
-
-	while (1)
+	FD_SET(0, &reads); // stdin : monitoring
+	
+	while(1)
 	{
 		temps = reads;
-		// select() ÇÔ¼öÀÇ timeout°ªÀ» 5ÃÊ·Î ¼³Á¤
-		timeout.tv_sec = 5;
-		timeout.tv_usec = 0;
+		// select()í•¨ìˆ˜ì˜ timeoutê°’ì„ 5ì´ˆë¡œ ì„¤ì •
+		timeout.tv_sec=5;
+		timeout.tv_usec=0;
 		result = select(1, &temps, 0, 0, &timeout);
-		if (result == -1)
+		if(result==-1)
 		{
-			//printf("select() error!");
-			write(1, "select() error!\n", 16);
-			//fflush(stdout);
+			write(1, "select() error!\n",16);
 			break;
 		}
-		//timeout
-		else if(result == 0)
+		// timeout
+		else if(result==0)
 		{
-			write(1, "timeout!\n", 9);
+			write(1, "timeout!\n",9);
 		}
-		//Á¤»óÀûÀ¸·Î selectÇÔ¼ö°¡ ¼öÇàµÈ °æ¿ì
+		// ì •ìƒì ìœ¼ë¡œ selectí•¨ìˆ˜ê°€ ìˆ˜í–‰ëœ ê²½ìš°
 		else
 		{
-			if (FD_ISSET(0, &temps))
+			if(FD_ISSET(0, &temps))
 			{
-				str_len = read(0, buf, BUFSIZE);
-				buf[str_len] = 0;		//¹®ÀÚ¿­¿¡ NULL Ãß°¡
-				printf("message from console : %s", buf);
+				str_len=read(0,buf,BUFSIZE);
+				buf[str_len]=0;	//ë¬¸ìì—´ì— NULLì¶”ê°€
+				printf("message from console: %s", buf);
 				fflush(stdout);
 			}
 		}
