@@ -21,3 +21,6 @@ network/thread/thread4
 network/thread/semaphore
 homework/threadAdd
 network/http/webserv_linux
+homework/processAdd
+process/killReceiver
+process/killTranceiver
