@@ -37,6 +37,20 @@ void sigHandler(int sig)
 
 	result += *(shmaddr);
 
+	// STEP 4. shmdt
+	if (shmdt(shared_mem) == -1)
+	{
+		fprintf(stderr, "shmdt failed\n");
+		exit(EXIT_FAILURE);
+	}
+
+	// STEP 5. shmclt
+	if (shmctl(shmid, IPC_RMID, 0) == -1)
+	{
+		fprintf(stderr, "shmctl(IPC_RMID) failed\n");
+		exit(EXIT_FAILURE);
+	}
+
 	printf("Result : %ld\n", result);
 
 	(void)signal(SIGINT, SIG_DFL);
